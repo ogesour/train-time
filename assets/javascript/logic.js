@@ -28,9 +28,33 @@
 
       database.ref().push(newTrain)
 
-      $('#trainName').val("");
-      $('#destination').val("");
-      $('#firstTrain').val("");
-      $('#frequency').val("");
+      $('#trainName').val('');
+      $('#destination').val('');
+      $('#firstTrain').val('');
+      $('#frequency').val('');
+    console.log(database);
+  });
 
+  database.ref().on('child_added', function(childSnapshot){
+      var tname = childSnapshot.val().name;
+      var tdestination = childSnapshot.val().destination;
+      var tfirstTrain = childSnapshot.val().firstTrain;
+      var tfrequency = childSnapshot.val().frequency;
+
+
+      const firstTimeConvert = moment(tfirstTrain, "HH:mm").subtract(1, "years");
+      const currentTime = moment();
+      var diffTime = moment().diff(moment(firstTimeConvert), "minutes");
+      var tRemainder = diffTime % tfrequency;
+      var tMinutesTillTrain = tfrequency - tRemainder;
+      var nextTrain = moment().add(tMinutesTillTrain, "minutes")
+
+      const newRow = $("<tr>").append(
+        $('<td>').text(tname.toUpperCase()),
+        $('<td>').text(tdestination.toUpperCase()),
+        $('<td>').text(tfirstTrain),
+        $('<td>').text(tfrequency + 'min'),
+        $('<td>').text(tMinutesTillTrain)
+      );
+      $('#tableBody').append(newRow);
   });
